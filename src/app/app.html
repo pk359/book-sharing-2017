@@ -1,11 +1,20 @@
 <ion-menu [content]="content">
-  <ion-header>
-    <ion-toolbar>
-      <ion-title>Menu</ion-title>
-    </ion-toolbar>
-  </ion-header>
+  <ion-content class="sidemenu">
+    <div class="user-info-container">
+      <div class="loggedIn-div" *ngIf="user">
+        <button class="logout-button" icon-only (click)="logout()" ion-button menuClose>
+            <ion-icon name="log-out"></ion-icon>
+            </button>
+        <div class="profile-image">
+          <ion-img [src]="user.photoURL" ></ion-img>
+        </div>
+        <h3 class="username">
+          {{user.displayName}}
+        </h3>
+      </div>
+      <button *ngIf="!user" class="login-button not-logged" (click)="loginWithGooglePopup()" ion-button round>Login</button>
+    </div>
 
-  <ion-content>
     <ion-list>
       <button menuClose ion-item *ngFor="let p of pages" (click)="openPage(p)">
         {{p.title}}
