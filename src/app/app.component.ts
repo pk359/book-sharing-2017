@@ -6,6 +6,7 @@ import { AppHelperProvider } from './providers/app-helper';
 import { User } from './models/user';
 import { LibraryPage } from '../pages/library/library';
 import { ProfilePage } from '../pages/profile/profile';
+import { SharebookPage } from '../pages/sharebook/sharebook';
 
 @Component({
   selector: 'app-component',
@@ -57,11 +58,11 @@ export class MyApp {
       this.user = user;
       console.log(this.user)
       // Object.assign(this.user, user)
-    }).catch(err=>{
+    }).catch(err => {
       console.log(err)
     })
   }
-  logout(){
+  logout() {
     this.user = null;
     this.apphelper.logout();
   }

@@ -12,6 +12,7 @@ import 'firebase/storage';
 import { AppHelperProvider } from './providers/app-helper';
 import { LibraryPage } from '../pages/library/library';
 import { ProfilePage } from '../pages/profile/profile';
+import { SharebookPage } from '../pages/sharebook/sharebook';
 
 var config = {
   apiKey: "AIzaSyDZt04r-XQ-RkhAek95CQuXrAuitb3x22o",
@@ -27,7 +28,8 @@ firebase.initializeApp(config);
   declarations: [
     MyApp,
     LibraryPage,
-    ProfilePage
+    ProfilePage,
+    SharebookPage
   ],
   imports: [
     BrowserModule,
@@ -37,13 +39,14 @@ firebase.initializeApp(config);
   entryComponents: [
     MyApp,
     LibraryPage,
-    ProfilePage
+    ProfilePage,
+    SharebookPage
   ],
   providers: [
     StatusBar,
     SplashScreen,
-    {provide: ErrorHandler, useClass: IonicErrorHandler},
+    { provide: ErrorHandler, useClass: IonicErrorHandler },
     AppHelperProvider
   ]
 })
-export class AppModule {}
+export class AppModule { }
