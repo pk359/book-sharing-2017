@@ -31,7 +31,9 @@ export class AppHelperProvider {
         })
     })
   }
-  logout(){
+  logout() {
     firebase.auth().signOut();
   }
+
+
 }

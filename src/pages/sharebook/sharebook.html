@@ -7,34 +7,32 @@
 <ion-header>
 
   <ion-navbar>
-    <ion-title>sharebook</ion-title>
+    <ion-title>Sharebook</ion-title>
   </ion-navbar>
 
 </ion-header>
 
 
 <ion-content padding>
-  <h2 ion-text text-center color="Dpink"> Sharing book is love</h2>
+  <h2 ion-text text-center color="Dpink">Share a book</h2>
 
-  <ion-col>
-    <ion-item>
-      <ion-label stacked> Title</ion-label>
-      <ion-input placeholder="Enter Book Titles" [(ngModel)]="bookData.title"></ion-input>
-    </ion-item>
-  </ion-col>
 
-  <ion-col>
-    <ion-item>
-      <ion-label stacked> Author</ion-label>
-      <ion-input placeholder="Enter a Author" [(ngModel)]="bookData.author"></ion-input>
-    </ion-item>
-  </ion-col>
-  <ion-row>
-    <ion-item>
-      <ion-label stacked> Summary</ion-label>
-      <ion-textarea placeholder="write a sweet Summary" [(ngModel)]="bookData.summary"></ion-textarea>
-    </ion-item>
-  </ion-row>
+  <ion-item>
+    <ion-label stacked> Book title</ion-label>
+    <ion-input [(ngModel)]="book.title"></ion-input>
+  </ion-item>
 
-  <button style="margin-top:30px" round color="Dpink" ion-button block (click)="placeRequest()">Share Book Now</button>
+  <ion-item>
+    <ion-label stacked> Author</ion-label>
+    <ion-input [(ngModel)]="book.author"></ion-input>
+  </ion-item>
+
+  <ion-item>
+    <ion-label stacked> Summary</ion-label>
+    <ion-textarea [(ngModel)]="book.summary"></ion-textarea>
+  </ion-item>
+  <p class="error" color="danger">
+    {{error}}
+  </p>
+  <button style="margin-top:30px" round color="Dpink" ion-button block (click)="submitBook()">Share Book Now</button>
 </ion-content>

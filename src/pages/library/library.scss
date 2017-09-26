@@ -1,3 +1,10 @@
 page-library {
-
+    .menu-item-navbar {
+        border: 2px solid;
+    }
+    .menu-item-navbar:hover {
+        // font-style: italic;
+        background-color: orange;
+        font-weight: bold; // font-size: 16px;
+    }
 }
