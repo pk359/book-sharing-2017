@@ -3,7 +3,7 @@ import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams, ToastController } from 'ionic-angular';
 import { Book } from '../../app/models/book';
 import firebase from 'firebase'
-import { User } from '../../app/models/user';
+import { DatabaseUser, FirebaseAuthUser } from '../../app/models/user';
 
 @Component({
   selector: 'page-sharebook',
@@ -13,23 +13,25 @@ export class SharebookPage {
 
   book: Book = new Book();
   errors: string[] = [];
-  cUser: User;
+  fireAuthUser: FirebaseAuthUser = new FirebaseAuthUser();
 
   constructor(public navCtrl: NavController,
     public navParams: NavParams,
     public toastCtrl: ToastController,
     public appHelper: AppHelperProvider
   ) {
-
+    appHelper.getCurrentFireAuthUser().then((user: FirebaseAuthUser) => {
+      this.fireAuthUser = user;
+    })
   }
 
   submitBook() {
     console.log(this.book)
-    this.validateBook(this.book);
+    this.errors = this.validateBook(this.book);
     // this.errors = this.validateBook(this.book);
     //If there is error;
     if (this.errors.length === 0) {
-      this.saveBookToFirebase();
+      this.saveBookToFirebase(this.book);
     }
   }
 
@@ -55,26 +57,36 @@ export class SharebookPage {
   }
 
 
-  saveBookToFirebase() {
-    var reqRef = firebase.database().ref('booklist/').push()
-    this.book.uid = reqRef.key;
-    // this.book.bookCreatorName = this.cUser.displayName;
-    //this.book.bookCreatorUid = this.cUser.uid;
-    this.appHelper.getCurrentUser().then((user: User) => {
+  saveBookToFirebase(book:Book) {
+    //First save image to firebase storage - allow only one image
 
-    })
-    reqRef.set(this.book).then(r => {
+    //Then push book to database.
 
-      this.toastCtrl.create({
-        message: 'Your book has been submitted successfully.',
-        duration: 4000,
-        position: 'button',
-        showCloseButton: true,
-        dismissOnPageChange: false
-      }).present();
+    /*
+      Create url of image array, posting time, ownerUid, likes
+      Update upload list for user.
+    */
+    var bookRef = firebase.database().ref('books').push();
 
+    /*
+    Now we have the key, let us save the image into fire storage. Get URL and update our
+    book
+    */
+    firebase.storage().ref('coverphotos/'+ bookRef.key + '.jpg');
+    /*
+    complete function to upload blob 
+    */
+    // book.coverURL = url;
+    // book.ownerUID = this.fireAuthUser.uid
+    // book.postingTime = moment()
+    // book.likes = 0
+
+
+    bookRef.set(this.book).then(r => {
       this.book = new Book();
     })
+    
+    firebase.database().ref('users/'+ this.fireAuthUser.uid + '/uploadList/'+bookRef.key).set(true);
   }
 
   isValidISBN(isbn) {

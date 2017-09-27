@@ -5,20 +5,13 @@
           <ion-icon name="menu"></ion-icon>
         </button>
     <ion-title>Library</ion-title>
-
+    <!-- 
     <ion-buttons end>
-      <button class="menu-item-navbar" ion-button round color="danger" (click)="openSharebookPage()">
+      <button class="menu-item-navbar" ion-button round color="danger" (click)="goToShareBookPage()">
          Sharebook
-          <!-- <ion-icon name="ios-leaf"></ion-icon> -->
+        
         </button>
-    </ion-buttons>
-
-    <ion-buttons end>
-      <button class="menu-item-navbar" ion-button round color="danger" (click)="openProfile()">
-           Profile
-            <!-- <ion-icon name="ios-leaf"></ion-icon> -->
-          </button>
-    </ion-buttons>
+    </ion-buttons> -->
   </ion-navbar>
 
 </ion-header>
@@ -26,22 +19,15 @@
 
 <ion-content padding>
 
-  <ion-searchbar (ionInput)="getItems($event)"></ion-searchbar>
-  <ion-list>
-    <ion-item *ngFor="let country of countryList">
-      <h2> {{ country.name }} </h2>
-      <h3> Code: <strong>{{ country.code }}</strong> </h3>
-    </ion-item>
-  </ion-list>
-
-  <h2>
-    TODO - add features
-  </h2>
-  <ul>
-    <li>Adding books</li>
-    <li>Removing books</li>
-    <li>Let others contact owner</li>
-    <li>Filters for books</li>
-    <li>Search by location</li>
-  </ul>
+  <ion-searchbar (ionInput)="getBooks($event)"></ion-searchbar>
+  <ion-card *ngFor="let book of filteredBooks" class="book-container" (click)="showBookDetail(book)">
+    <ion-card-content>
+      <img [src]="book.coverURL" >
+      <!-- <ion-img [src]="book.coverURL"></ion-img> -->
+      <!-- <h3>{{book.title}}</h3> -->
+      <span>
+          <b>{{book.title}}</b>, (Author: <i>{{book.author}}</i>)
+      </span>
+    </ion-card-content>
+  </ion-card>
 </ion-content>

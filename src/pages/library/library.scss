@@ -7,4 +7,17 @@ page-library {
         background-color: orange;
         font-weight: bold; // font-size: 16px;
     }
+    .book-container {
+        text-align: center; // box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+        // ion-img {
+        //     min-width: 200px;
+        //     min-height: 200px;
+        // }
+        img {
+            height: 198px;
+        }
+        float: left;
+        width: 210px;
+        margin-top: 0px;
+    }
 }

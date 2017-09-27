@@ -3,10 +3,10 @@ import { Nav, Platform } from 'ionic-angular';
 import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
 import { AppHelperProvider } from './providers/app-helper';
-import { User } from './models/user';
 import { LibraryPage } from '../pages/library/library';
 import { ProfilePage } from '../pages/profile/profile';
 import { SharebookPage } from '../pages/sharebook/sharebook';
+import { FirebaseAuthUser, DatabaseUser } from './models/user';
 
 @Component({
   selector: 'app-component',
@@ -16,8 +16,9 @@ export class MyApp {
   @ViewChild(Nav) nav: Nav;
 
   rootPage: any = LibraryPage;
-  pages: Array<{ title: string, component: any }>;
-  user: User
+  pages: Array<{ title: string, iconName:string, component: any }>;
+  user: FirebaseAuthUser
+  menuItemSelected: string = ''
   constructor(public platform: Platform,
     public statusBar: StatusBar,
     public splashScreen: SplashScreen,
@@ -26,9 +27,11 @@ export class MyApp {
     this.initializeApp();
     // used for an example of ngFor and navigation
     this.pages = [
-      { title: 'Library', component: LibraryPage },
-      { title: 'Profile', component: ProfilePage },
+      { title: 'Library', iconName: 'albums', component: LibraryPage },
+      { title: 'Sharebook', iconName: 'share-alt', component: SharebookPage },
+      { title: 'Profile', iconName: 'person', component: ProfilePage }
     ];
+    this.menuItemSelected = 'Library';
 
   }
 
@@ -36,8 +39,9 @@ export class MyApp {
     /*
     Check if user is logged in.
     */
-    this.apphelper.getCurrentUser().then(user => {
+    this.apphelper.getCurrentFireAuthUser().then((user:FirebaseAuthUser) => {
       this.user = user;
+      console.log(this.user, 'here is promise data')
     })
     this.platform.ready().then(() => {
       // Okay, so the platform is ready and our plugins are available.
@@ -48,16 +52,25 @@ export class MyApp {
   }
 
   openPage(page) {
+    this.menuItemSelected = page.title;
     // Reset the content nav to have just this page
     // we wouldn't want the back button to show in this scenario
     this.nav.setRoot(page.component);
   }
 
   loginWithGooglePopup() {
-    this.apphelper.loginWithGooglePopup().then((user: User) => {
-      this.user = user;
-      console.log(this.user)
-      // Object.assign(this.user, user)
+    this.apphelper.loginWithGooglePopup().then((user: DatabaseUser) => {
+      this.apphelper.getCurrentFireAuthUser().then((authUser:FirebaseAuthUser)=>{
+        this.user = authUser;
+        this.apphelper.doesUserExist(authUser).then((res:boolean)=>{
+          if(!res){
+            console.log('user does not exist..creating user');
+            this.apphelper.createUserInFirebase(user, authUser).then(res=>{
+              console.log(res)
+            })
+          }
+        })
+      })
     }).catch(err => {
       console.log(err)
     })

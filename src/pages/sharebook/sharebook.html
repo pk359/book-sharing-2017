@@ -7,6 +7,9 @@
 <ion-header>
 
   <ion-navbar>
+      <button ion-button menuToggle>
+          <ion-icon name="menu"></ion-icon>
+        </button>
     <ion-title>Sharebook</ion-title>
   </ion-navbar>
 
@@ -19,7 +22,7 @@
 
   <ion-item>
     <ion-label stacked> Book title</ion-label>
-    <ion-input [(ngModel)]="book.title"></ion-input>
+    <ion-input  [(ngModel)]="book.title"></ion-input>
   </ion-item>
 
   <ion-item>

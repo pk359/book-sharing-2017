@@ -1,9 +1,8 @@
 export class Book {
-    uid: string;
     title: string;
     author: string;
     isbn: string;
-    bookPhotos: any[];
+    coverURL: string;
     summary: string;
     ownerUid: string
 }

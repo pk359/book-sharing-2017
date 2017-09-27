@@ -1,12 +1,14 @@
 <ion-menu [content]="content">
   <ion-content class="sidemenu">
+    <div class="app-name">
+      <span>UBOOK</span>
+      
+      <ion-icon item-end name="log-out" tappable menuClose (click)="logout()" *ngIf="user"></ion-icon>
+    </div>
     <div class="user-info-container">
       <div class="loggedIn-div" *ngIf="user">
-        <button class="logout-button" icon-only (click)="logout()" ion-button menuClose>
-            <ion-icon name="log-out"></ion-icon>
-            </button>
         <div class="profile-image">
-          <ion-img [src]="user.photoURL" ></ion-img>
+          <ion-img [src]="user.photoURL"></ion-img>
         </div>
         <h3 class="username">
           {{user.displayName}}
@@ -16,9 +18,15 @@
     </div>
 
     <ion-list>
-      <button menuClose ion-item *ngFor="let p of pages" (click)="openPage(p)">
-        {{p.title}}
-      </button>
+      <ion-item *ngFor="let p of pages" (click)="openPage(p)" menuClose tappable no-lines [class.menuItemSelected]="p.title === menuItemSelected">
+        <!-- <button ion-button icon-only item-start clear> -->
+        <ion-icon [name]="p.iconName" item-start></ion-icon>
+        <!-- </button> -->
+        <span item-end>
+            {{p.title}}
+        </span>
+
+      </ion-item>
     </ion-list>
   </ion-content>
 
