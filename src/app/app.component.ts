@@ -4,8 +4,8 @@ import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
 import { AppHelperProvider } from './providers/app-helper';
 import { LibraryPage } from '../pages/library/library';
-import { ProfilePage } from '../pages/profile/profile';
 import { SharebookPage } from '../pages/sharebook/sharebook';
+import { ProfilePage } from '../pages/profile/profile';
 import { FirebaseAuthUser, DatabaseUser } from './models/user';
 
 @Component({
@@ -15,7 +15,7 @@ import { FirebaseAuthUser, DatabaseUser } from './models/user';
 export class MyApp {
   @ViewChild(Nav) nav: Nav;
 
-  rootPage: any = LibraryPage;
+  rootPage: any = 'LibraryPage';
   pages: Array<{ title: string, iconName:string, component: any }>;
   user: FirebaseAuthUser
   menuItemSelected: string = ''
@@ -27,9 +27,9 @@ export class MyApp {
     this.initializeApp();
     // used for an example of ngFor and navigation
     this.pages = [
-      { title: 'Library', iconName: 'albums', component: LibraryPage },
-      { title: 'Sharebook', iconName: 'share-alt', component: SharebookPage },
-      { title: 'Profile', iconName: 'person', component: ProfilePage }
+      { title: 'Library', iconName: 'albums', component: 'LibraryPage' },
+      { title: 'Sharebook', iconName: 'share-alt', component: 'SharebookPage' },
+      { title: 'Profile', iconName: 'person', component: 'ProfilePage' }
     ];
     this.menuItemSelected = 'Library';
 

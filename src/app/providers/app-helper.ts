@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import 'rxjs/add/operator/map';
 import * as firebase from 'firebase/app';
 import { FirebaseAuthUser, DatabaseUser } from '../models/user';
+import { Book } from '../models/book';
 
 
 @Injectable()
@@ -69,6 +70,37 @@ export class AppHelperProvider {
         reject(err)
       })
     })
+  }
+
+
+  getMockBooks() {
+
+    var books: Book[] = [
+
+      {
+        author: 'Satya Nadella',
+        coverURL: 'https://www.sephora.com/productimages/sku/s1828862-main-zoom.jpg',
+        ownerUid: 'Puf2UfmIRbMj1Jqv3CmJnNkAHNU2',
+        summary: 'Good book and like it',
+        title: 'Computer Science'
+      },
+      {
+        author: 'Satya Nadella',
+        coverURL: 'https://www.sephora.com/productimages/sku/s1828862-main-zoom.jpg',
+        ownerUid: 'Puf2UfmIRbMj1Jqv3CmJnNkAHNU2',
+        summary: 'Good book and like it',
+        title: 'Computer Science'
+
+      },
+      {
+        author: 'Prem Kumar',
+        coverURL: 'https://images-na.ssl-images-amazon.com/images/I/518l2awqcnL._SY445_QL70_.jpg',
+        ownerUid: 'Puf2UfmIRbMj1Jqv3CmJnNkAHNU2',
+        summary: 'Good book and like it',
+        title: 'Hit Sc'
+      }
+    ]
+    return books;
   }
 
 

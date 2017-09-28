@@ -4,7 +4,7 @@ import { IonicPage, NavController, NavParams, ToastController } from 'ionic-angu
 import { Book } from '../../app/models/book';
 import firebase from 'firebase'
 import { DatabaseUser, FirebaseAuthUser } from '../../app/models/user';
-
+@IonicPage()
 @Component({
   selector: 'page-sharebook',
   templateUrl: 'sharebook.html',
