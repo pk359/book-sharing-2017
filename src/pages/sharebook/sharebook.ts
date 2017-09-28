@@ -10,7 +10,7 @@ import { DatabaseUser, FirebaseAuthUser } from '../../app/models/user';
   templateUrl: 'sharebook.html',
 })
 export class SharebookPage {
-
+  selectedFile: File
   book: Book = new Book();
   errors: string[] = [];
   fireAuthUser: FirebaseAuthUser = new FirebaseAuthUser();
@@ -26,17 +26,22 @@ export class SharebookPage {
   }
 
   submitBook() {
-    console.log(this.book)
+    console.log(this.book, this.selectedFile)
     this.errors = this.validateBook(this.book);
     // this.errors = this.validateBook(this.book);
     //If there is error;
     if (this.errors.length === 0) {
+      //File is valid, book is valid
+      this.book.author = ''
+      this.book.summary = ''
+      this.book.title = ''
+      this.book.isbn = ''
+      this.selectedFile = null;
       this.saveBookToFirebase(this.book);
     }
   }
 
   validateBook(book: Book): string[] {
-    console.log('making sure')
     var errors = []
     if (!book.title) {
       errors.push('Title is empty!')
@@ -52,10 +57,21 @@ export class SharebookPage {
     if (!book.summary) {
       errors.push('Summary is empty')
     }
+
+    if (this.selectedFile && !this.validImageFile(this.selectedFile)) {
+      // errors.push('ISBN seems invalid');
+    }
     console.log(errors, 'string');
     return errors;
   }
 
+  onFileChange(event){
+    this.selectedFile = event.target.files[0];
+  }
+
+  validImageFile(file){
+    console.log(file)
+  }
 
   saveBookToFirebase(book:Book) {
     //First save image to firebase storage - allow only one image

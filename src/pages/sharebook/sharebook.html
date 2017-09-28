@@ -7,7 +7,7 @@
 <ion-header>
 
   <ion-navbar>
-      <button ion-button menuToggle>
+    <button ion-button menuToggle>
           <ion-icon name="menu"></ion-icon>
         </button>
     <ion-title>Sharebook</ion-title>
@@ -19,23 +19,39 @@
 <ion-content padding>
   <h2 ion-text text-center color="Dpink">Share a book</h2>
 
+  <form >
+
+
+  
 
   <ion-item>
     <ion-label stacked> Book title</ion-label>
-    <ion-input  [(ngModel)]="book.title"></ion-input>
+    <ion-input [ngModelOptions]="{standalone: true}" [(ngModel)]="book.title" required></ion-input>
   </ion-item>
 
   <ion-item>
     <ion-label stacked> Author</ion-label>
-    <ion-input [(ngModel)]="book.author"></ion-input>
+    <ion-input  [ngModelOptions]="{standalone: true}"[(ngModel)]="book.author" required></ion-input>
   </ion-item>
 
   <ion-item>
     <ion-label stacked> Summary</ion-label>
-    <ion-textarea [(ngModel)]="book.summary"></ion-textarea>
+    <ion-textarea [ngModelOptions]="{standalone: true}" [(ngModel)]="book.summary" required></ion-textarea>
+  </ion-item>
+
+  <ion-item>
+    <ion-label stacked>ISBN (Optional)</ion-label>
+    <ion-input [ngModelOptions]="{standalone: true}" [(ngModel)]="book.isbn"></ion-input>
+  </ion-item>
+
+  <ion-item>
+    <!-- <ion-label stacked>Upload image (Optional)</ion-label> -->
+    <input type="file" (change)="onFileChange($event)" accept='image/*'> 
   </ion-item>
   <p class="error" color="danger">
     {{error}}
   </p>
   <button style="margin-top:30px" round color="Dpink" ion-button block (click)="submitBook()">Share Book Now</button>
+
+</form>
 </ion-content>
