@@ -7,7 +7,7 @@
     <div class="user-info-container">
       <div class="loggedIn-div" *ngIf="getUser()">
         <div class="profile-image">
-          <ion-img [src]="getUser().photoURL"></ion-img>
+          <img [src]="getUser().photoURL">
         </div>
         <h3 class="username">
           {{getUser().displayName}}

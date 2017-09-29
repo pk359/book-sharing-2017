@@ -1,46 +1,51 @@
-import { Injectable } from '@angular/core';
+import { Injectable, OnInit } from '@angular/core';
 // import { Http } from '@angular/http';
 import 'rxjs/add/operator/map';
 import * as firebase from 'firebase/app';
 import { FirebaseAuthUser, DatabaseUser } from '../models/user';
 import { Book } from '../models/book';
-
+import { Subject } from 'rxjs/Subject';
+import { Observable } from 'rxjs';
 
 @Injectable()
-export class AppHelperProvider {
-
-  dbUser: DatabaseUser = null;
+export class AppHelperProvider implements OnInit {
+  dbUser: DatabaseUser = new DatabaseUser();
   constructor() {
-    
     this.managerUser();
   }
 
-  private managerUser(){
+  ngOnInit() {
+    // firebase.database().ref('users/' + this.dbUser.key).once('value', (snap) => {
+
+    // })
+  }
+
+  private managerUser() {
     firebase.auth().onAuthStateChanged(user => {
-      if(user){
-        firebase.database().ref('users/' + user.uid).once('value', (snap) => {
-         if(snap.exists()){
-            this.dbUser = new DatabaseUser();
+      if (user) {
+        firebase.database().ref('users/' + user.uid).on('value', (snap) => {
+          if (snap.exists()) {
             Object.assign(this.dbUser, snap.val());
-         }else{
+           
+          } else {
             const newUser = new DatabaseUser();
             newUser.phoneNumber = user.phoneNumber
             newUser.displayName = user.displayName;
             newUser.email = user.email;
             newUser.photoURL = user.photoURL;
             newUser.key = user.uid;
-            newUser.update().then(_=>{
+            newUser.update().then(_ => {
               this.dbUser = newUser;
             })
-         }
-         this.dbUser = snap.val();
+          }
+          this.dbUser = snap.val();
         })
-      }else{
-        this.dbUser = null;
+      } else {
+        this.dbUser = new DatabaseUser();
       }
     })
   }
-  
+
 
   loginWithGooglePopup(): Promise<boolean> {
     return new Promise((resolve, reject) => {
@@ -57,10 +62,16 @@ export class AppHelperProvider {
     firebase.auth().signOut();
   }
 
-  
-  updatePhone(phoneNumber: string) {
-    this.dbUser.phoneNumber = phoneNumber;
-    this.dbUser.update();
+
+  updateProfile(data) : Promise<boolean> {
+    //Get all the keys and value pair that we wish to update.
+    return new Promise<boolean>((resolve, reject)=>{
+      firebase.database().ref('users/'+ this.dbUser.key).update(data).then(_=>{
+        resolve(true)
+      }).catch(err=>{
+        reject(err)
+      })
+    })
   }
 
   getMockBooks() {

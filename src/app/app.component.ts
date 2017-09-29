@@ -32,7 +32,6 @@ export class MyApp {
       { title: 'Profile', iconName: 'person', component: 'ProfilePage' }
     ];
     this.menuItemSelected = 'Library';
-
   }
 
   initializeApp() {
@@ -62,7 +61,7 @@ export class MyApp {
     this.apphelper.logout();
   }
 
-  getUser(){
+ getUser(){
     return this.apphelper.dbUser;
   }
 }
