@@ -5,13 +5,13 @@ import { AppHelperProvider } from '../../app/providers/app-helper';
 import { Book } from '../../app/models/book';
 import * as Fuse from 'fuse.js';
 
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 @IonicPage()
 @Component({
   selector: 'page-library',
   templateUrl: 'library.html',
 })
-export class LibraryPage {
+export class LibraryPage implements OnInit{
 
   firebaseAuthUser = new FirebaseAuthUser();
 
@@ -22,7 +22,12 @@ export class LibraryPage {
     private alertCtrl: AlertController,
   ) {
     
-    this.books = this.filteredBooks = this.appHelper.getMockBooks();
+  }
+  ngOnInit(){
+    this.appHelper.getBooks().then(books=>{
+      this.books = books;
+      this.filteredBooks = books;
+    })
   }
 
   getUser(){

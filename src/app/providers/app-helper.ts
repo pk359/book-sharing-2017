@@ -74,36 +74,46 @@ export class AppHelperProvider implements OnInit {
     })
   }
 
-  getMockBooks() {
-    const objs = [
-      {
-        author: 'Satya Nadella',
-        coverURLs: ['https://www.sephora.com/productimages/sku/s1828862-main-zoom.jpg'],
-        ownerUid: 'Puf2UfmIRbMj1Jqv3CmJnNkAHNU2',
-        summary: 'Good book and like it',
-        title: 'Computer Science'
-      },
-      {
-        author: 'Satya Nadella',
-        coverURLs: ['https://www.sephora.com/productimages/sku/s1828862-main-zoom.jpg'],
-        ownerUid: 'Puf2UfmIRbMj1Jqv3CmJnNkAHNU2',
-        summary: 'Good book and like it',
-        title: 'Computer Science'
-
-      },
-      {
-        author: 'Prem Kumar',
-        coverURLs: ['https://images-na.ssl-images-amazon.com/images/I/518l2awqcnL._SY445_QL70_.jpg'],
-        ownerUid: 'Puf2UfmIRbMj1Jqv3CmJnNkAHNU2',
-        summary: 'Good book and like it',
-        title: 'Hit Sc'
-      }
-    ]
-
-    return objs.map(obj => {
-      const book = new Book();
-      Object.assign(book, obj);
-      return book;
+  getBooks(): Promise<Book[]>{
+    return new Promise<Book[]>((resolve, reject)=>{
+      firebase.database().ref('books').once('value', snap=>{
+        if(snap.exists()){
+          console.log(Object.keys(snap.val()).map(key=>{return snap.val()[key]}))
+          resolve(Object.keys(snap.val()).map(key=>{return snap.val()[key]})) 
+        }
+      })
     })
   }
+  // getMockBooks() {
+  //   const objs = [
+  //     {
+  //       author: 'Satya Nadella',
+  //       coverURLs: ['https://www.sephora.com/productimages/sku/s1828862-main-zoom.jpg'],
+  //       ownerUid: 'Puf2UfmIRbMj1Jqv3CmJnNkAHNU2',
+  //       summary: 'Good book and like it',
+  //       title: 'Computer Science'
+  //     },
+  //     {
+  //       author: 'Satya Nadella',
+  //       coverURLs: ['https://www.sephora.com/productimages/sku/s1828862-main-zoom.jpg'],
+  //       ownerUid: 'Puf2UfmIRbMj1Jqv3CmJnNkAHNU2',
+  //       summary: 'Good book and like it',
+  //       title: 'Computer Science'
+
+  //     },
+  //     {
+  //       author: 'Prem Kumar',
+  //       coverURLs: ['https://images-na.ssl-images-amazon.com/images/I/518l2awqcnL._SY445_QL70_.jpg'],
+  //       ownerUid: 'Puf2UfmIRbMj1Jqv3CmJnNkAHNU2',
+  //       summary: 'Good book and like it',
+  //       title: 'Hit Sc'
+  //     }
+  //   ]
+
+  //   return objs.map(obj => {
+  //     const book = new Book();
+  //     Object.assign(book, obj);
+  //     return book;
+  //   })
+  // }
 }

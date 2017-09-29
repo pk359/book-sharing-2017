@@ -47,11 +47,18 @@ export class SharebookPage {
 
       try {
         await this.book.save(this.selectedFiles, this.getUser());
-        Object.keys(this.book).forEach(key => {
-          this.book[key] = ''
-        })
-        this.selectedFiles = null;
+        // Object.keys(this.book).forEach(key => {
+        //   this.book[key] = ''
+        // })
+        // this.selectedFiles = null;
         alert.dismiss()
+        //Create a toast to tell user file has been uploaded
+        const toast = this.toastCtrl.create({
+          message: 'Book was added successfully',
+          duration: 3000,
+          position: 'middle'
+        });
+        this.navCtrl.setRoot('LibraryPage');
       } catch (err) {
         console.error(err)
       }
