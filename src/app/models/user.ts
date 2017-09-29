@@ -1,4 +1,5 @@
 export class DatabaseUser {
+    key: string;
     displayName: string
     photoURL: string
     email: string

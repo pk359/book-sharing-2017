@@ -76,7 +76,7 @@ export class LibraryPage {
   showBookDetail(book: Book) {
     `
     <h4><b>${book.title}</b>, (Author: <i>${book.author}</i>)</h4>
-   <img src='${book.coverURL}'>
+   <img src='${book.coverURLs[0]}'>
    
     <ion-textarea rows="4" [(ngModel)]="message"></ion-textarea>
     <button ion-button round block (click)="">Send message</button>

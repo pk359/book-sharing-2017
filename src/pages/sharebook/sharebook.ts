@@ -1,6 +1,6 @@
 import { AppHelperProvider } from './../../app/providers/app-helper';
 import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams, ToastController } from 'ionic-angular';
+import { IonicPage, NavController, NavParams, ToastController, AlertController } from 'ionic-angular';
 import { Book } from '../../app/models/book';
 import firebase from 'firebase'
 import { DatabaseUser, FirebaseAuthUser } from '../../app/models/user';
@@ -10,34 +10,47 @@ import { DatabaseUser, FirebaseAuthUser } from '../../app/models/user';
   templateUrl: 'sharebook.html',
 })
 export class SharebookPage {
-  selectedFile: File
+  selectedFiles: File[]
   book: Book = new Book();
   errors: string[] = [];
   fireAuthUser: FirebaseAuthUser = new FirebaseAuthUser();
 
   constructor(public navCtrl: NavController,
-    public navParams: NavParams,
-    public toastCtrl: ToastController,
-    public appHelper: AppHelperProvider
+    private navParams: NavParams,
+    private toastCtrl: ToastController,
+    private appHelper: AppHelperProvider,
+    private alertCtrl: AlertController
   ) {
     appHelper.getCurrentFireAuthUser().then((user: FirebaseAuthUser) => {
       this.fireAuthUser = user;
     })
   }
 
-  submitBook() {
-    console.log(this.book, this.selectedFile)
+  async submitBook(bookForm) {
     this.errors = this.validateBook(this.book);
-    // this.errors = this.validateBook(this.book);
-    //If there is error;
     if (this.errors.length === 0) {
       //File is valid, book is valid
-      this.book.author = ''
-      this.book.summary = ''
-      this.book.title = ''
-      this.book.isbn = ''
-      this.selectedFile = null;
-      this.saveBookToFirebase(this.book);
+
+      console.log(this.book, this.selectedFiles)
+      /*
+      There is no error, so let us save image to firebase quickly. and get url to image
+      */
+      let alert = this.alertCtrl.create({
+        title: 'loading...',
+        message: 'loading book in database'
+      })
+      alert.present();
+
+      try {
+        await this.book.save(this.selectedFiles);
+        Object.keys(this.book).forEach(key => {
+          this.book[key] = ''
+        })
+        this.selectedFiles = null;
+        alert.dismiss()
+      } catch (err) {
+        console.error(err)
+      }
     }
   }
 
@@ -58,22 +71,28 @@ export class SharebookPage {
       errors.push('Summary is empty')
     }
 
-    if (this.selectedFile && !this.validImageFile(this.selectedFile)) {
+    if (this.selectedFiles && !this.validImageFile(this.selectedFiles)) {
       // errors.push('ISBN seems invalid');
     }
     console.log(errors, 'string');
     return errors;
   }
 
-  onFileChange(event){
-    this.selectedFile = event.target.files[0];
+  onFileChange(event) {
+    this.selectedFiles =
+      Object.keys(event.target.files)
+        .filter(key => {
+          return key !== 'length';
+        }).map(key => {
+          return event.target.files[key];
+        })
   }
 
-  validImageFile(file){
-    console.log(file)
+  validImageFile(files) {
+    console.log(files)
   }
 
-  saveBookToFirebase(book:Book) {
+  saveBookToFirebase(book: Book) {
     //First save image to firebase storage - allow only one image
 
     //Then push book to database.
@@ -88,7 +107,7 @@ export class SharebookPage {
     Now we have the key, let us save the image into fire storage. Get URL and update our
     book
     */
-    firebase.storage().ref('coverphotos/'+ bookRef.key + '.jpg');
+    firebase.storage().ref('coverphotos/' + bookRef.key + '.jpg');
     /*
     complete function to upload blob 
     */
@@ -101,8 +120,8 @@ export class SharebookPage {
     bookRef.set(this.book).then(r => {
       this.book = new Book();
     })
-    
-    firebase.database().ref('users/'+ this.fireAuthUser.uid + '/uploadList/'+bookRef.key).set(true);
+
+    firebase.database().ref('users/' + this.fireAuthUser.uid + '/uploadList/' + bookRef.key).set(true);
   }
 
   isValidISBN(isbn) {
