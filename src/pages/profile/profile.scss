@@ -1,3 +1,15 @@
 page-profile {
-
+    .card-md{
+        width: 300px
+    }
+    ion-img {
+        height: 200px;
+        width: 200px;
+        min-width: 100px;
+        min-height: 100px;
+        background: white;
+        img{
+            border-radius: 50%;
+        }
+    }
 }

@@ -72,6 +72,23 @@ export class AppHelperProvider {
     })
   }
 
+  getDBUserFromFB(user: FirebaseAuthUser) : Promise<DatabaseUser> {
+    return new Promise((resolve, reject) => {
+      firebase.database().ref('users/' + user.uid).once('value', (snap) => {
+        var dbUser: DatabaseUser = snap.val()
+        dbUser['uid'] = user.uid;
+        resolve(dbUser)
+        console.log(dbUser)
+
+      })
+    })
+  }
+  updatePhoneNo(user: DatabaseUser, phoneNumber){
+    var key = Object.keys(phoneNumber)[0]
+    user.phoneNumber = phoneNumber[key]
+    firebase.database().ref('users/' + user['uid']).update({phoneNumber:user.phoneNumber})
+    console.log(user.phoneNumber)
+  }
 
   getMockBooks() {
 
