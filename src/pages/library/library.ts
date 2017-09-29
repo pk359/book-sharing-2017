@@ -21,10 +21,12 @@ export class LibraryPage {
     public appHelper: AppHelperProvider,
     private alertCtrl: AlertController,
   ) {
-    this.appHelper.getCurrentFireAuthUser().then((user: FirebaseAuthUser) => {
-      this.firebaseAuthUser = user;
-    })
+    
     this.books = this.filteredBooks = this.appHelper.getMockBooks();
+  }
+
+  getUser(){
+    return this.appHelper.dbUser;
   }
 
   ionViewDidLoad() {

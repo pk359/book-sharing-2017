@@ -18,25 +18,25 @@
 <ion-content padding style="text-align: center">
   <ion-card>
     <ion-item style="text-align: center">
-      <ion-img [src]="dbUser.photoURL"></ion-img>
+      <ion-img [src]="getUser().photoURL"></ion-img>
     </ion-item>
   </ion-card>
   <ion-card>
     <ion-item>
       <ion-label>
-        Name : {{dbUser.displayName}}
+        Name : {{getUser().displayName}}
       </ion-label>
     </ion-item>
     <ion-item>
       <ion-label>
-        Email : {{dbUser.email}}
+        Email : {{getUser().email}}
       </ion-label>
     </ion-item>
     <ion-item>
       <ion-label style="color: black; overflow:unset">
-        Phone No. : {{dbUser.phoneNumber}}
+        Phone No. : {{getUser().phoneNumber}}
       </ion-label>
     </ion-item>
   </ion-card>
-  <button color="primary" round (click)="updateProfile()">Update Phone Number</button>
+  <button color="primary" round (click)="updatePhone()">Update Phone Number</button>
 </ion-content>

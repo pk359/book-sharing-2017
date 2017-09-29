@@ -9,26 +9,45 @@ import { Book } from '../models/book';
 @Injectable()
 export class AppHelperProvider {
 
+  dbUser: DatabaseUser = null;
   constructor() {
-
+    
+    this.managerUser();
   }
 
-  getCurrentFireAuthUser(): Promise<FirebaseAuthUser> {
-    return new Promise((resolve) => {
-      firebase.auth().onAuthStateChanged((user: FirebaseAuthUser) => {
-        console.log(user);
-        resolve(user);
-      })
+  private managerUser(){
+    firebase.auth().onAuthStateChanged(user => {
+      if(user){
+        firebase.database().ref('users/' + user.uid).once('value', (snap) => {
+         if(snap.exists()){
+            this.dbUser = new DatabaseUser();
+            Object.assign(this.dbUser, snap.val());
+         }else{
+            const newUser = new DatabaseUser();
+            newUser.phoneNumber = user.phoneNumber
+            newUser.displayName = user.displayName;
+            newUser.email = user.email;
+            newUser.photoURL = user.photoURL;
+            newUser.key = user.uid;
+            newUser.update().then(_=>{
+              this.dbUser = newUser;
+            })
+         }
+         this.dbUser = snap.val();
+        })
+      }else{
+        this.dbUser = null;
+      }
     })
   }
+  
 
-  loginWithGooglePopup(): Promise<DatabaseUser> {
+  loginWithGooglePopup(): Promise<boolean> {
     return new Promise((resolve, reject) => {
       firebase.auth()
         .signInWithPopup(new firebase.auth.GoogleAuthProvider())
         .then(res => {
-          let dbUser = this.getDBUserModel(res['user']);
-          resolve(dbUser);
+          resolve(true);
         }).catch(err => {
           reject(err)
         })
@@ -38,56 +57,10 @@ export class AppHelperProvider {
     firebase.auth().signOut();
   }
 
-  doesUserExist(user: FirebaseAuthUser): Promise<boolean> {
-    return new Promise((resolve, reject) => {
-      firebase.database().ref(`users/${user.uid}`).once('value', snap => {
-        if (snap.val()) {
-          resolve(true)
-        }
-        resolve(false);
-      })
-    })
-
-
-
-  }
-  getDBUserModel(responseFromFirebaseAuth: firebase.User) {
-    let user = new DatabaseUser();
-    user.phoneNumber = responseFromFirebaseAuth.phoneNumber;
-    user.displayName = responseFromFirebaseAuth.displayName;
-    user.email = responseFromFirebaseAuth.email;
-    user.photoURL = responseFromFirebaseAuth.photoURL;
-
-    return user;
-  }
-
-  createUserInFirebase(user: DatabaseUser, authUser: FirebaseAuthUser) {
-    console.log(user)
-    return new Promise((resolve, reject) => {
-      firebase.database().ref(`users/${authUser.uid}`).set(user).then(_ => {
-        resolve('user created');
-      }).catch(err => {
-        reject(err)
-      })
-    })
-  }
-
-  getDBUserFromFB(user: FirebaseAuthUser) : Promise<DatabaseUser> {
-    return new Promise((resolve, reject) => {
-      firebase.database().ref('users/' + user.uid).once('value', (snap) => {
-        var dbUser: DatabaseUser = snap.val()
-        dbUser['uid'] = user.uid;
-        resolve(dbUser)
-        console.log(dbUser)
-
-      })
-    })
-  }
-  updatePhoneNo(user: DatabaseUser, phoneNumber){
-    var key = Object.keys(phoneNumber)[0]
-    user.phoneNumber = phoneNumber[key]
-    firebase.database().ref('users/' + user['uid']).update({phoneNumber:user.phoneNumber})
-    console.log(user.phoneNumber)
+  
+  updatePhone(phoneNumber: string) {
+    this.dbUser.phoneNumber = phoneNumber;
+    this.dbUser.update();
   }
 
   getMockBooks() {
@@ -101,7 +74,7 @@ export class AppHelperProvider {
       },
       {
         author: 'Satya Nadella',
-        coverURLs:[ 'https://www.sephora.com/productimages/sku/s1828862-main-zoom.jpg'],
+        coverURLs: ['https://www.sephora.com/productimages/sku/s1828862-main-zoom.jpg'],
         ownerUid: 'Puf2UfmIRbMj1Jqv3CmJnNkAHNU2',
         summary: 'Good book and like it',
         title: 'Computer Science'
@@ -116,14 +89,10 @@ export class AppHelperProvider {
       }
     ]
 
-     return objs.map(obj=>{
+    return objs.map(obj => {
       const book = new Book();
       Object.assign(book, obj);
       return book;
     })
   }
-
- 
-
-
 }

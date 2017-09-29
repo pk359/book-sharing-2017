@@ -23,16 +23,16 @@ export class ProfilePage {
     public apphelper: AppHelperProvider,
     public alertCtrl: AlertController
   ) {
-    this.apphelper.getCurrentFireAuthUser().then((user: FirebaseAuthUser) => {
-      this.fireAuthUser = user;
-      this.apphelper.getDBUserFromFB(this.fireAuthUser).then((user) => {
-        this.dbUser = user
-      })
-    })
+    
+
 
   }
 
-  updateProfile() {
+  getUser(){
+    return this.apphelper.dbUser;
+  }
+
+  updatePhone() {
     let confirm = this.alertCtrl.create({
       title: "Update Phone No.",
       inputs: [
@@ -46,7 +46,7 @@ export class ProfilePage {
           text: "Confirm",
           handler: data => {
             if (data) {
-              this.apphelper.updatePhoneNo(this.dbUser, data)
+              this.apphelper.updatePhone(data)
             }
           }
         },

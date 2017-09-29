@@ -3,7 +3,7 @@ import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams, ToastController, AlertController } from 'ionic-angular';
 import { Book } from '../../app/models/book';
 import firebase from 'firebase'
-import { DatabaseUser, FirebaseAuthUser } from '../../app/models/user';
+import { DatabaseUser } from '../../app/models/user';
 @IonicPage()
 @Component({
   selector: 'page-sharebook',
@@ -13,7 +13,6 @@ export class SharebookPage {
   selectedFiles: File[]
   book: Book = new Book();
   errors: string[] = [];
-  fireAuthUser: FirebaseAuthUser = new FirebaseAuthUser();
 
   constructor(public navCtrl: NavController,
     private navParams: NavParams,
@@ -21,13 +20,18 @@ export class SharebookPage {
     private appHelper: AppHelperProvider,
     private alertCtrl: AlertController
   ) {
-    appHelper.getCurrentFireAuthUser().then((user: FirebaseAuthUser) => {
-      this.fireAuthUser = user;
-    })
+   
+  }
+
+  getUser(){
+    return this.appHelper.dbUser;
   }
 
   async submitBook(bookForm) {
     this.errors = this.validateBook(this.book);
+    if(!this.validateImages(this.selectedFiles)){
+      this.errors.push('Only images types allowed');
+    }
     if (this.errors.length === 0) {
       //File is valid, book is valid
 
@@ -42,7 +46,7 @@ export class SharebookPage {
       alert.present();
 
       try {
-        await this.book.save(this.selectedFiles);
+        await this.book.save(this.selectedFiles, this.getUser());
         Object.keys(this.book).forEach(key => {
           this.book[key] = ''
         })
@@ -70,12 +74,17 @@ export class SharebookPage {
     if (!book.summary) {
       errors.push('Summary is empty')
     }
-
-    if (this.selectedFiles && !this.validImageFile(this.selectedFiles)) {
-      // errors.push('ISBN seems invalid');
-    }
     console.log(errors, 'string');
     return errors;
+  }
+  validateImages(files) : boolean{
+    let allowedFileTypes = ["image/gif", "image/jpeg", "image/png"];
+    files.forEach(file=>{
+      if(allowedFileTypes.indexOf(file['type']) < 0 ){
+        return false;
+      }
+    })
+    return true;
   }
 
   onFileChange(event) {
@@ -88,41 +97,6 @@ export class SharebookPage {
         })
   }
 
-  validImageFile(files) {
-    console.log(files)
-  }
-
-  saveBookToFirebase(book: Book) {
-    //First save image to firebase storage - allow only one image
-
-    //Then push book to database.
-
-    /*
-      Create url of image array, posting time, ownerUid, likes
-      Update upload list for user.
-    */
-    var bookRef = firebase.database().ref('books').push();
-
-    /*
-    Now we have the key, let us save the image into fire storage. Get URL and update our
-    book
-    */
-    firebase.storage().ref('coverphotos/' + bookRef.key + '.jpg');
-    /*
-    complete function to upload blob 
-    */
-    // book.coverURL = url;
-    // book.ownerUID = this.fireAuthUser.uid
-    // book.postingTime = moment()
-    // book.likes = 0
-
-
-    bookRef.set(this.book).then(r => {
-      this.book = new Book();
-    })
-
-    firebase.database().ref('users/' + this.fireAuthUser.uid + '/uploadList/' + bookRef.key).set(true);
-  }
 
   isValidISBN(isbn) {
     isbn = isbn.replace(/[^\dX]/gi, '');

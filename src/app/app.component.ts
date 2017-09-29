@@ -16,9 +16,9 @@ export class MyApp {
   @ViewChild(Nav) nav: Nav;
 
   rootPage: any = 'LibraryPage';
-  pages: Array<{ title: string, iconName:string, component: any }>;
-  user: FirebaseAuthUser
+  pages: Array<{ title: string, iconName: string, component: any }>;
   menuItemSelected: string = ''
+
   constructor(public platform: Platform,
     public statusBar: StatusBar,
     public splashScreen: SplashScreen,
@@ -39,10 +39,7 @@ export class MyApp {
     /*
     Check if user is logged in.
     */
-    this.apphelper.getCurrentFireAuthUser().then((user:FirebaseAuthUser) => {
-      this.user = user;
-      console.log(this.user, 'here is promise data')
-    })
+    
     this.platform.ready().then(() => {
       // Okay, so the platform is ready and our plugins are available.
       // Here you can do any higher level native things you might need.
@@ -58,25 +55,14 @@ export class MyApp {
     this.nav.setRoot(page.component);
   }
 
-  loginWithGooglePopup() {
-    this.apphelper.loginWithGooglePopup().then((user: DatabaseUser) => {
-      this.apphelper.getCurrentFireAuthUser().then((authUser:FirebaseAuthUser)=>{
-        this.user = authUser;
-        this.apphelper.doesUserExist(authUser).then((res:boolean)=>{
-          if(!res){
-            console.log('user does not exist..creating user');
-            this.apphelper.createUserInFirebase(user, authUser).then(res=>{
-              console.log(res)
-            })
-          }
-        })
-      })
-    }).catch(err => {
-      console.log(err)
-    })
+  async loginWithGooglePopup() {
+    this.apphelper.loginWithGooglePopup()
   }
   logout() {
-    this.user = null;
     this.apphelper.logout();
+  }
+
+  getUser(){
+    return this.apphelper.dbUser;
   }
 }

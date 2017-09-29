@@ -2,19 +2,18 @@
   <ion-content class="sidemenu">
     <div class="app-name">
       <span>UBOOK</span>
-      
-      <ion-icon item-end name="log-out" tappable menuClose (click)="logout()" *ngIf="user"></ion-icon>
+      <ion-icon item-end name="log-out" tappable menuClose (click)="logout()" *ngIf="getUser()"></ion-icon>
     </div>
     <div class="user-info-container">
-      <div class="loggedIn-div" *ngIf="user">
+      <div class="loggedIn-div" *ngIf="getUser()">
         <div class="profile-image">
-          <ion-img [src]="user.photoURL"></ion-img>
+          <ion-img [src]="getUser().photoURL"></ion-img>
         </div>
         <h3 class="username">
-          {{user.displayName}}
+          {{getUser().displayName}}
         </h3>
       </div>
-      <button *ngIf="!user" class="login-button not-logged" (click)="loginWithGooglePopup()" ion-button round>Login</button>
+      <button *ngIf="!getUser()" class="login-button not-logged" (click)="loginWithGooglePopup()" ion-button round>Login</button>
     </div>
 
     <ion-list>
