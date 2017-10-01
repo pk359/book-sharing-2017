@@ -2,34 +2,63 @@ import { AppHelperProvider } from './../../app/providers/app-helper';
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams, ToastController, AlertController } from 'ionic-angular';
 import { Book } from '../../app/models/book';
-import firebase from 'firebase'
 import { DatabaseUser } from '../../app/models/user';
+import {Events} from 'ionic-angular'
+import { Storage } from '@ionic/storage';
 @IonicPage()
 @Component({
   selector: 'page-sharebook',
   templateUrl: 'sharebook.html',
 })
 export class SharebookPage {
-  selectedFiles: File[]
+  selectedFiles: File[] = []
   book: Book = new Book();
   errors: string[] = [];
 
+  user: any;
   constructor(public navCtrl: NavController,
     private navParams: NavParams,
     private toastCtrl: ToastController,
     private appHelper: AppHelperProvider,
-    private alertCtrl: AlertController
+    private alertCtrl: AlertController,
+    public events: Events,
+    public storage: Storage
   ) {
-   
+    this.events.subscribe('user:loggedIn', (res) => {
+      console.log('user is logged in. i m just fucking up')
+      this.user = res;
+    })
+    this.events.subscribe('user:loggedOut', (res) => {
+      this.user = null;
+    })
   }
 
+
+  ionViewCanEnter():Promise<boolean>{
+    return new Promise<boolean>((resolve, reject)=>{
+      this.storage.get('currentUser').then(res=>{
+        var currentUser = JSON.parse(res);
+        if(currentUser){
+         resolve(true)
+        }else{
+          resolve(false)
+          this.appHelper.alertUserToLogin()
+        }
+      })
+    }) 
+  }
+
+
+  ionViewDidLoad(){
+    this.user = this.appHelper.user;
+  }
   getUser(){
-    return this.appHelper.dbUser;
+    return this.appHelper.user;
   }
 
   async submitBook(bookForm) {
     this.errors = this.validateBook(this.book);
-    if(!this.validateImages(this.selectedFiles)){
+    if(this.selectedFiles.length>0 && !this.validateImages(this.selectedFiles)){
       this.errors.push('Only images types allowed');
     }
     if (this.errors.length === 0) {
@@ -46,7 +75,7 @@ export class SharebookPage {
       alert.present();
 
       try {
-        await this.book.save(this.selectedFiles, this.getUser());
+        await this.book.save(this.selectedFiles, this.user);
         // Object.keys(this.book).forEach(key => {
         //   this.book[key] = ''
         // })

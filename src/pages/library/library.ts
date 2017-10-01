@@ -12,9 +12,6 @@ import { Component, OnInit } from '@angular/core';
   templateUrl: 'library.html',
 })
 export class LibraryPage implements OnInit{
-
-  firebaseAuthUser = new FirebaseAuthUser();
-
   books: Book[] = []
   filteredBooks: Book[] = []
   constructor(public navCtrl: NavController, public navParams: NavParams,
@@ -30,9 +27,6 @@ export class LibraryPage implements OnInit{
     })
   }
 
-  getUser(){
-    return this.appHelper.dbUser;
-  }
 
   ionViewDidLoad() {
     console.log('ionViewDidLoad LibraryPage');

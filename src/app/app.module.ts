@@ -18,6 +18,7 @@ import { AppHelperProvider } from './providers/app-helper';
 import { LibraryPageModule } from '../pages/library/library.module';
 import { SharebookPageModule } from '../pages/sharebook/sharebook.module';
 import { ProfilePageModule } from '../pages/profile/profile.module';
+import { IonicStorageModule } from '@ionic/storage';
 
 
 
@@ -42,6 +43,7 @@ firebase.initializeApp(config);
     IonicModule.forRoot(MyApp,{
       preloadModules: true
     }),
+    IonicStorageModule.forRoot(),
     LibraryPageModule, 
     SharebookPageModule,
     ProfilePageModule

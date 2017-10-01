@@ -1,16 +1,15 @@
 import * as firebase from 'firebase/app';
 export class DatabaseUser {
-    key: string;
+    uid: string;
     displayName: string
     photoURL: string
     email: string
     phoneNumber: string
-    uploadList: string[]
 
     update(): Promise<any> {
         return new Promise((resolve, reject) => {
-          firebase.database().ref(`users/${this.key}`).set(this).then(_ => {
-           console.log('updated '+ this.key)
+          firebase.database().ref(`users/${this.uid}`).set(this).then(_ => {
+           console.log('updated '+ this.uid)
            resolve()
           }).catch(err => {
             reject(err)

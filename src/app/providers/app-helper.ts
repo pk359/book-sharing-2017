@@ -7,113 +7,119 @@ import { Book } from '../models/book';
 import { Subject } from 'rxjs/Subject';
 import { Observable } from 'rxjs';
 
+import { Events, AlertController } from 'ionic-angular';
+import { Storage } from '@ionic/storage';
+
 @Injectable()
-export class AppHelperProvider implements OnInit {
-  dbUser: DatabaseUser = new DatabaseUser();
-  constructor() {
+export class AppHelperProvider {
+  user: FirebaseAuthUser
+  constructor(
+    public events: Events,
+    public storage: Storage,
+    private alertCtrl: AlertController
+  ) {
     this.managerUser();
   }
 
-  ngOnInit() {
-    // firebase.database().ref('users/' + this.dbUser.key).once('value', (snap) => {
+  // getCurrentUser(): Promise<firebase.UserInfo>{
+  //   return new Promise<firebase.UserInfo>(resolve=>{
+  //     resolve()
+  //   })
+  // }
 
-    // })
-  }
-
-  private managerUser() {
-    firebase.auth().onAuthStateChanged(user => {
+  managerUser() {
+    console.log('here');
+    firebase.auth().onAuthStateChanged((user: firebase.UserInfo) => {
       if (user) {
-        firebase.database().ref('users/' + user.uid).on('value', (snap) => {
-          if (snap.exists()) {
-            Object.assign(this.dbUser, snap.val());
-           
-          } else {
-            const newUser = new DatabaseUser();
-            newUser.phoneNumber = user.phoneNumber
-            newUser.displayName = user.displayName;
-            newUser.email = user.email;
-            newUser.photoURL = user.photoURL;
-            newUser.key = user.uid;
-            newUser.update().then(_ => {
-              this.dbUser = newUser;
-            })
+        this.user = firebase.auth().currentUser;
+        this.events.publish('user:loggedIn', user);
+        let userRef = firebase.database().ref('users/' + user.uid);
+        userRef.once('value', (snap) => {
+          if (!snap.exists()) {
+            userRef.set(user);
           }
-          this.dbUser = snap.val();
         })
-      } else {
-        this.dbUser = new DatabaseUser();
+      }
+      else {
+        this.user = null;
+        this.events.publish('user:loggedOut');
       }
     })
   }
 
+  getDBUser(): Promise<DatabaseUser> {
+    return new Promise<DatabaseUser>(resolve => {
+      firebase.database().ref(`users/${this.user.uid}`).once('value', snap => {
+        resolve(snap.val());
+      })
+    })
+  }
 
-  loginWithGooglePopup(): Promise<boolean> {
+  async alertUserToLogin() {
+    return new Promise<firebase.UserInfo>(resolve=>{
+      const alert = this.alertCtrl.create({
+        title: 'Please login...',
+        message: 'You need to login to access this page.',
+        buttons: [
+          // {
+          //   text: 'Cancel',
+          //   role: 'cancel',
+          // },
+          {
+            text: 'Okay',
+          
+            // handler: () => {
+            //   this.loginWithGooglePopup().then(res => {
+            //     resolve(firebase.auth().currentUser)
+            //   });
+            // }
+          }
+        ]
+      });
+      alert.present();
+    })
+   
+  }
+  loginWithGooglePopup(): Promise<FirebaseAuthUser> {
     return new Promise((resolve, reject) => {
       firebase.auth()
         .signInWithPopup(new firebase.auth.GoogleAuthProvider())
         .then(res => {
-          resolve(true);
+          this.user = firebase.auth().currentUser;
+          this.storage.set('currentUser', JSON.stringify(this.user));
+          resolve(this.user);
         }).catch(err => {
           reject(err)
         })
     })
   }
+
   logout() {
-    firebase.auth().signOut();
+    firebase.auth().signOut().then(_=>{
+      this.storage.remove('currentUser');
+    })
   }
 
 
-  updateProfile(data) : Promise<boolean> {
+  updateProfile(data): Promise<boolean> {
     //Get all the keys and value pair that we wish to update.
-    return new Promise<boolean>((resolve, reject)=>{
-      firebase.database().ref('users/'+ this.dbUser.key).update(data).then(_=>{
+    return new Promise<boolean>((resolve, reject) => {
+      firebase.database().ref('users/' + this.user.uid).update(data).then(_ => {
         resolve(true)
-      }).catch(err=>{
+      }).catch(err => {
         reject(err)
       })
     })
   }
 
-  getBooks(): Promise<Book[]>{
-    return new Promise<Book[]>((resolve, reject)=>{
-      firebase.database().ref('books').once('value', snap=>{
-        if(snap.exists()){
-          console.log(Object.keys(snap.val()).map(key=>{return snap.val()[key]}))
-          resolve(Object.keys(snap.val()).map(key=>{return snap.val()[key]})) 
+  getBooks(): Promise<Book[]> {
+    return new Promise<Book[]>((resolve, reject) => {
+      firebase.database().ref('books').once('value', snap => {
+        if (snap.exists()) {
+          console.log(Object.keys(snap.val()).map(key => { return snap.val()[key] }))
+          resolve(Object.keys(snap.val()).map(key => { return snap.val()[key] }))
         }
       })
     })
   }
-  // getMockBooks() {
-  //   const objs = [
-  //     {
-  //       author: 'Satya Nadella',
-  //       coverURLs: ['https://www.sephora.com/productimages/sku/s1828862-main-zoom.jpg'],
-  //       ownerUid: 'Puf2UfmIRbMj1Jqv3CmJnNkAHNU2',
-  //       summary: 'Good book and like it',
-  //       title: 'Computer Science'
-  //     },
-  //     {
-  //       author: 'Satya Nadella',
-  //       coverURLs: ['https://www.sephora.com/productimages/sku/s1828862-main-zoom.jpg'],
-  //       ownerUid: 'Puf2UfmIRbMj1Jqv3CmJnNkAHNU2',
-  //       summary: 'Good book and like it',
-  //       title: 'Computer Science'
-
-  //     },
-  //     {
-  //       author: 'Prem Kumar',
-  //       coverURLs: ['https://images-na.ssl-images-amazon.com/images/I/518l2awqcnL._SY445_QL70_.jpg'],
-  //       ownerUid: 'Puf2UfmIRbMj1Jqv3CmJnNkAHNU2',
-  //       summary: 'Good book and like it',
-  //       title: 'Hit Sc'
-  //     }
-  //   ]
-
-  //   return objs.map(obj => {
-  //     const book = new Book();
-  //     Object.assign(book, obj);
-  //     return book;
-  //   })
-  // }
 }

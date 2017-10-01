@@ -1,35 +1,56 @@
-<ion-menu [content]="content">
-  <ion-content class="sidemenu">
-    <div class="app-name">
-      <span>UBOOK</span>
-      <ion-icon item-end name="log-out" tappable menuClose (click)="logout()" *ngIf="getUser()"></ion-icon>
-    </div>
-    <div class="user-info-container">
-      <div class="loggedIn-div" *ngIf="getUser()">
-        <div class="profile-image">
-          <img [src]="getUser().photoURL">
-        </div>
-        <h3 class="username">
-          {{getUser().displayName}}
-        </h3>
+  <ion-menu [content]="content" id="loggedInMenu">
+    <ion-content class="sidemenu">
+      <div class="app-name">
+        <span>UBOOK</span>
+        <ion-icon item-end name="log-out" tappable menuClose (click)="logout()"></ion-icon>
       </div>
-      <button *ngIf="!getUser()" class="login-button not-logged" (click)="loginWithGooglePopup()" ion-button round>Login</button>
-    </div>
+      <div class="user-info-container">
+        <div class="loggedIn-div" *ngIf="user">
+          <div class="profile-image">
+            <img [src]="user.photoURL">
+          </div>
+          <h3 class="username">
+            {{user.displayName}}
+          </h3>
+        </div>
+      </div>
 
-    <ion-list>
-      <ion-item *ngFor="let p of pages" (click)="openPage(p)" menuClose tappable no-lines [class.menuItemSelected]="p.title === menuItemSelected">
-        <!-- <button ion-button icon-only item-start clear> -->
-        <ion-icon [name]="p.iconName" item-start></ion-icon>
-        <!-- </button> -->
-        <span item-end>
+      <ion-list>
+        <ion-item *ngFor="let p of loggedInPages" (click)="openPage(p)" menuClose tappable no-lines [class.menuItemSelected]="p.title === menuItemSelected">
+          <!-- <button ion-button icon-only item-start clear> -->
+          <ion-icon [name]="p.icon" item-start></ion-icon>
+          <!-- </button> -->
+          <span item-end>
             {{p.title}}
         </span>
 
-      </ion-item>
-    </ion-list>
-  </ion-content>
+        </ion-item>
+      </ion-list>
+    </ion-content>
 
-</ion-menu>
+  </ion-menu>
 
-<!-- Disable swipe-to-go-back because it's poor UX to combine STGB with side menus -->
-<ion-nav [root]="rootPage" #content swipeBackEnabled="false"></ion-nav>
+  <ion-menu [content]="content" id="loggedOutMenu">
+    <ion-content class="sidemenu">
+      <div class="app-name">
+        <span>UBOOK</span>
+      </div>
+      <div class="user-info-container">
+
+      </div>
+      <button *ngIf="!user" class="login-button not-logged" (click)="loginWithGooglePopup()" ion-button round>Login</button>
+      <ion-list>
+          <ion-item *ngFor="let p of loggedOutPages" (click)="openPage(p)" menuClose tappable no-lines [class.menuItemSelected]="p.title === menuItemSelected">
+            <!-- <button ion-button icon-only item-start clear> -->
+            <ion-icon [name]="p.icon" item-start></ion-icon>
+            <!-- </button> -->
+            <span item-end>
+              {{p.title}}
+          </span>
+  
+          </ion-item>
+        </ion-list>
+    </ion-content>
+  </ion-menu>
+  <!-- Disable swipe-to-go-back because it's poor UX to combine STGB with side menus -->
+  <ion-nav [root]="rootPage" #content swipeBackEnabled="false"></ion-nav>

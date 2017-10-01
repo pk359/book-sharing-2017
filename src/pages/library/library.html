@@ -22,7 +22,7 @@
   <ion-searchbar (ionInput)="getBooks($event)"></ion-searchbar>
   <ion-card *ngFor="let book of filteredBooks; async" class="book-container" (click)="showBookDetail(book)">
     <ion-card-content>
-      <img [src]="book.coverURLs[0]" >
+      <img src="{{book.coverURLs ? book.coverURLs[0]:'assets/images/no_image.png'}}" >
       <!-- <ion-img [src]="book.coverURL"></ion-img> -->
       <!-- <h3>{{book.title}}</h3> -->
       <span>

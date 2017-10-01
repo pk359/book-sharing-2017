@@ -1,14 +1,9 @@
 
 import { AppHelperProvider } from './../../app/providers/app-helper';
 import { Component } from '@angular/core';
-import { NavController, NavParams, IonicPage, AlertController } from 'ionic-angular';
-
-/**
- * Generated class for the ProfilePage page.
- *
- * See https://ionicframework.com/docs/components/#navigation for more info on
- * Ionic pages and navigation.
- */
+import { NavController, NavParams, IonicPage, AlertController, Events } from 'ionic-angular';
+import { DatabaseUser } from '../../app/models/user';
+import { Storage } from '@ionic/storage';
 @IonicPage()
 @Component({
   selector: 'page-profile',
@@ -17,21 +12,44 @@ import { NavController, NavParams, IonicPage, AlertController } from 'ionic-angu
 export class ProfilePage {
   edittable = false
   edittedData: any = {}
+  dbUser: DatabaseUser = new DatabaseUser()
   constructor(public navCtrl: NavController,
     public navParams: NavParams,
-    public apphelper: AppHelperProvider,
-    public alertCtrl: AlertController
+    public appHelper: AppHelperProvider,
+    public alertCtrl: AlertController,
+    public events: Events,
+    public storage: Storage
   ) {
+   
+  }
+  ionViewDidLoad(){
+    this.appHelper.getDBUser().then(res=>{
+      this.dbUser = res;
+    })
+  }
+
+  ionViewCanEnter():Promise<boolean>{
+    return new Promise<boolean>((resolve, reject)=>{
+      this.storage.get('currentUser').then(res=>{
+        var currentUser = JSON.parse(res);
+        if(currentUser){
+         resolve(true)
+        }else{
+          resolve(false)
+          this.appHelper.alertUserToLogin()
+        }
+      })
+    }) 
   }
 
   getUser() {
-    return this.apphelper.dbUser;
+    return this.appHelper.user;
   }
 
   onSave() {
     console.log('editted data', this.edittedData);
     if (Object.keys(this.edittedData).length > 0) {
-      this.apphelper.updateProfile(this.edittedData).then(_=>{
+      this.appHelper.updateProfile(this.edittedData).then(_=>{
         this.toggleEdittable();
       })
     }

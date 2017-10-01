@@ -16,9 +16,9 @@
 </ion-header>
 
 <ion-content padding style="text-align: center">
-  <ion-card>
+  <ion-card *ngIf="dbUser">
     <ion-item style="text-align: center">
-      <ion-img [src]="getUser().photoURL"></ion-img>
+      <ion-img [src]="dbUser.photoURL"></ion-img>
     </ion-item>
 
     <ion-list>
@@ -27,15 +27,15 @@
       </ion-item>
       <ion-item>
         <ion-label inline>Name</ion-label>
-        <ion-input [disabled]="!edittable" (change)="edittedData['displayName']= $event.target.value" [value]="getUser().displayName"></ion-input>
+        <ion-input [disabled]="!edittable" (change)="edittedData['displayName']= $event.target.value" [value]="dbUser.displayName"></ion-input>
       </ion-item>
       <ion-item>
         <ion-label inline>Email</ion-label>
-        <ion-input disabled [value]="getUser().email"></ion-input>
+        <ion-input disabled [value]="dbUser.email"></ion-input>
       </ion-item>
       <ion-item>
         <ion-label style="color: black; overflow:unset" inline>Phone No</ion-label>
-        <ion-input [disabled]="!edittable" (change)="edittedData['phoneNumber']= $event.target.value" [value]="getUser().phoneNumber"></ion-input>
+        <ion-input [disabled]="!edittable" (change)="edittedData['phoneNumber']= $event.target.value" [value]="dbUser.phoneNumber"></ion-input>
       </ion-item>
       <button color="primary" ion-button block outline round *ngIf="edittable" (click)="onSave()">Save</button>
     </ion-list>
