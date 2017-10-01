@@ -10,6 +10,7 @@ import { Observable } from 'rxjs';
 import { Events, AlertController } from 'ionic-angular';
 import { Storage } from '@ionic/storage';
 
+
 @Injectable()
 export class AppHelperProvider {
   user: FirebaseAuthUser
@@ -29,14 +30,21 @@ export class AppHelperProvider {
 
   managerUser() {
     console.log('here');
-    firebase.auth().onAuthStateChanged((user: firebase.UserInfo) => {
+    firebase.auth().onAuthStateChanged((user) => {
       if (user) {
-        this.user = firebase.auth().currentUser;
-        this.events.publish('user:loggedIn', user);
-        let userRef = firebase.database().ref('users/' + user.uid);
-        userRef.once('value', (snap) => {
+        this.user = new FirebaseAuthUser()
+        this.user = {
+          displayName: user.displayName,
+          email: user.email,
+          uid: user.uid,
+          photoURL: user.photoURL
+        }
+        console.log(this.user)
+        this.events.publish('user:loggedIn', this.user);
+        let userRef = firebase.database().ref('users');
+        userRef.child(user.uid).once('value', (snap) => {
           if (!snap.exists()) {
-            userRef.set(user);
+            userRef.push(this.user);
           }
         })
       }
