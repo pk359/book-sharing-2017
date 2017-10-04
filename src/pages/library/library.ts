@@ -11,17 +11,17 @@ import { Component, OnInit } from '@angular/core';
   selector: 'page-library',
   templateUrl: 'library.html',
 })
-export class LibraryPage implements OnInit{
+export class LibraryPage implements OnInit {
   books: Book[] = []
   filteredBooks: Book[] = []
   constructor(public navCtrl: NavController, public navParams: NavParams,
     public appHelper: AppHelperProvider,
     private alertCtrl: AlertController,
   ) {
-    
+
   }
-  ngOnInit(){
-    this.appHelper.getBooks().then(books=>{
+  ngOnInit() {
+    this.appHelper.getBooks().then(books => {
       this.books = books;
       this.filteredBooks = books;
     })
@@ -67,11 +67,15 @@ export class LibraryPage implements OnInit{
 
     var fuse = new Fuse(this.books, options)
     this.filteredBooks = []
-    fuse.search(val).forEach((book: Book) => {
-      this.filteredBooks.push(book)
+    fuse.search(val).forEach((book: Book, index) => {
+
+      if (index < 50) {
+        this.filteredBooks.push(book)
+      }
     })
     // this.filteredBooks = fuse.search(val);
   }
+
 
 
   showBookDetail(book: Book) {
