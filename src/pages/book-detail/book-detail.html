@@ -1,0 +1,29 @@
+<ion-header>
+
+  <ion-navbar>
+    <button ion-button menuToggle>
+          <ion-icon name="menu"></ion-icon>
+        </button>
+    <ion-title>Book detail</ion-title>
+  </ion-navbar>
+
+</ion-header>
+
+<ion-content padding>
+  <div class="book-container" *ngIf="book">
+    <ngb-carousel>
+      <ng-template ngbSlide *ngFor="let url of book.coverURLs">
+        <img [src]="url" alt="{{book.title}}">
+        <div class="carousel-caption">
+          <h3>{{book.title}}</h3>
+        </div>
+      </ng-template>
+      <ng-template *ngIf="!book.coverURLs">
+        <img src="assets/images/no_image.png">
+      </ng-template>
+    </ngb-carousel>
+    <span class="book-info"><b><i>Title</i></b>: {{book.title}}</span><br>
+    <span class="book-info"><b><i>Author</i></b>: {{book.author}}</span><br>
+    <span class="book-info"><b><i>Description</i></b>: {{book.summary}}</span><br>
+  </div>
+</ion-content>

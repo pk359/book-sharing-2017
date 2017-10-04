@@ -5,6 +5,7 @@ import { IonicApp, IonicErrorHandler, IonicModule } from 'ionic-angular';
 import { SplashScreen } from '@ionic-native/splash-screen';
 import { StatusBar } from '@ionic-native/status-bar';
 import { IonicPageModule } from 'ionic-angular';
+import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
 
 import * as firebase from 'firebase';
 import 'firebase/auth';
@@ -43,6 +44,7 @@ firebase.initializeApp(config);
     IonicModule.forRoot(MyApp,{
       preloadModules: true
     }),
+    NgbModule.forRoot(),
     IonicStorageModule.forRoot(),
     LibraryPageModule, 
     SharebookPageModule,

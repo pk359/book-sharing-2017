@@ -16,9 +16,9 @@ export class Book {
         return new Promise<boolean>((resolve, reject) => {
             this.key = ref.key;
             const promiseList: Promise<string>[] = [];
-            files.forEach(file => {
+            files.forEach((file, i) => {
                 const promise = new Promise<string>((resolve, reject) => {
-                    firebase.storage().ref(this.key + '/' + this.key).put(file).then(snap => {
+                    firebase.storage().ref(this.key + '/' + i).put(file).then(snap => {
                         resolve(snap.downloadURL);
                     }).catch(err => {
                         reject(err['message']);

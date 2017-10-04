@@ -1,28 +1,34 @@
 import { AppHelperProvider } from './../../app/providers/app-helper';
-import { Component } from '@angular/core';
+import { Component, ElementRef, ViewChild } from '@angular/core';
 import { IonicPage, NavController, NavParams, ToastController, AlertController } from 'ionic-angular';
 import { Book } from '../../app/models/book';
 import { DatabaseUser } from '../../app/models/user';
-import {Events} from 'ionic-angular'
+import { Events } from 'ionic-angular'
 import { Storage } from '@ionic/storage';
+import { DomSanitizer } from '@angular/platform-browser';
 @IonicPage()
 @Component({
   selector: 'page-sharebook',
   templateUrl: 'sharebook.html',
 })
 export class SharebookPage {
-  selectedFiles: File[] = []
+  @ViewChild('files') filesRef: ElementRef;
+  @ViewChild('preview') previewRef: ElementRef;
+  selectedFiles: any = []
   book: Book = new Book();
   errors: string[] = [];
 
   user: any;
-  constructor(public navCtrl: NavController,
+  constructor(
+    private _sanitizer: DomSanitizer,
+    public navCtrl: NavController,
     private navParams: NavParams,
     private toastCtrl: ToastController,
     private appHelper: AppHelperProvider,
     private alertCtrl: AlertController,
     public events: Events,
-    public storage: Storage
+    public storage: Storage,
+    public elmRef: ElementRef
   ) {
     this.events.subscribe('user:loggedIn', (res) => {
       console.log('user is logged in. i m just fucking up')
@@ -33,32 +39,34 @@ export class SharebookPage {
     })
   }
 
-
-  ionViewCanEnter():Promise<boolean>{
-    return new Promise<boolean>((resolve, reject)=>{
-      this.storage.get('currentUser').then(res=>{
+  sanitize(content) {
+    // return this._sanitizer.bypassSecurityTrustResourceUrl(`${content}`);
+  }
+  ionViewCanEnter(): Promise<boolean> {
+    return new Promise<boolean>((resolve, reject) => {
+      this.storage.get('currentUser').then(res => {
         var currentUser = JSON.parse(res);
-        if(currentUser){
-         resolve(true)
-        }else{
+        if (currentUser) {
+          resolve(true)
+        } else {
           resolve(false)
           this.appHelper.alertUserToLogin()
         }
       })
-    }) 
+    })
   }
 
 
-  ionViewDidLoad(){
+  ionViewDidLoad() {
     this.user = this.appHelper.user;
   }
-  getUser(){
+  getUser() {
     return this.appHelper.user;
   }
 
   async submitBook(bookForm) {
     this.errors = this.validateBook(this.book);
-    if(this.selectedFiles.length>0 && !this.validateImages(this.selectedFiles)){
+    if (this.selectedFiles.length > 0 && !this.validateImages(this.selectedFiles)) {
       this.errors.push('Only images types allowed');
     }
     if (this.errors.length === 0) {
@@ -113,10 +121,10 @@ export class SharebookPage {
     console.log(errors, 'string');
     return errors;
   }
-  validateImages(files) : boolean{
-    let allowedFileTypes = ["image/gif", "image/jpeg", "image/png"];
-    files.forEach(file=>{
-      if(allowedFileTypes.indexOf(file['type']) < 0 ){
+  validateImages(files): boolean {
+
+    files.forEach(file => {
+      if (! /\.(jpe?g|png|gif)$/i.test(file.name)) {
         return false;
       }
     })
@@ -124,14 +132,37 @@ export class SharebookPage {
   }
 
   onFileChange(event) {
+
+    // function getThumb(file) {
+
+    //   var thumb: any
+
+
+    //   // return thumb;
+    // }
     this.selectedFiles =
       Object.keys(event.target.files)
         .filter(key => {
           return key !== 'length';
         }).map(key => {
-          return event.target.files[key];
+          let fileObj = { 'file': event.target.files[key] };
+
+          var reader = new FileReader();
+          reader.addEventListener("load", (file) =>{
+            var thumb = new Image();
+            thumb.height = 100;
+            thumb.title = event.target.files[key].name;
+            thumb.src = file.toString();
+            fileObj['thumb'] = thumb;
+          }, false)
+          reader.readAsDataURL(event.target.files[key])
+          return fileObj;
+          // return event.target.files[key];
         })
+    console.log(this.selectedFiles)
   }
+
+
 
 
   isValidISBN(isbn) {

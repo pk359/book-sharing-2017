@@ -41,13 +41,24 @@
       <ion-label stacked>ISBN (Optional)</ion-label>
       <ion-input [(ngModel)]="book.isbn" name="isbn"></ion-input>
     </ion-item>
-    <ion-item>
-      <input type="file" (change)="onFileChange($event)" accept='image/*'>
-    </ion-item>
+
+    <!-- <ion-row>
+      <ion-col *ngFor="let file of selectedFiles">
+      </ion-col>
+    </ion-row> -->
+    
+    <div #preview id="preview">
+      <!-- <object *ngFor="let file of selectedFiles" [data]="file.thumb"></object> -->
+     <!-- <ion-col *ngFor="let file of selectedFiles">
+     </ion-col> -->
+    </div>
+    <input type="file" multiple #files (change)="onFileChange($event)" accept='image/*'>
+
+
     <p class="error" color="danger">
       {{error}}
     </p>
-    <button type="submit"  style="margin-top:30px"  [disabled]="!bookForm.form.valid" round color="darkpink" ion-button block>Share Book Now</button>
+    <button type="submit" style="margin-top:30px" [disabled]="!bookForm.form.valid" round color="darkpink" ion-button block>Share Book Now</button>
   </form>
   <!-- <form #bookForm="ngForm" (ngSubmit)="submitBook()">
     <input type="text" [(ngModel)] = 'book.title'>

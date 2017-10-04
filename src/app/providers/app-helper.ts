@@ -125,7 +125,7 @@ export class AppHelperProvider {
       firebase.database().ref('books').once('value', snap => {
         if (snap.exists()) {
           console.log(Object.keys(snap.val()).map(key => { return snap.val()[key] }))
-          resolve(Object.keys(snap.val()).map(key => { return snap.val()[key] }))
+          resolve(Object.keys(snap.val()).map(key => { return snap.val()[key]}).reverse())
         }
       })
     })

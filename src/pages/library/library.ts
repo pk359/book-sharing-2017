@@ -75,13 +75,11 @@ export class LibraryPage implements OnInit{
 
 
   showBookDetail(book: Book) {
-    `
-    <h4><b>${book.title}</b>, (Author: <i>${book.author}</i>)</h4>
-   <img src='${book.coverURLs[0]}'>
-   
-    <ion-textarea rows="4" [(ngModel)]="message"></ion-textarea>
-    <button ion-button round block (click)="">Send message</button>
-   `
+
+    this.navCtrl.push('BookDetailPage', {
+      title: book.title, 
+      book: book
+    });
 
     // dialogRef.result
     //    .then( result => alert(`The result is: ${result}`) );

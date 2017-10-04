@@ -26,6 +26,7 @@ export class MyApp {
   menuItemSelected: string = ''
   user: any;
   loggedInPages: PageInterface[] = [
+    { title: 'Messages', name: 'MessagesPage', icon: 'text', component: 'MessagesPage' },
     { title: 'Library', name: 'LibraryPage', icon: 'albums', component: 'LibraryPage' },
     { title: 'Sharebook', name:'SharebookPage', icon: 'share-alt', component: 'SharebookPage' },
     { title: 'Profile', name: 'ProfilePage', icon: 'person', component: 'ProfilePage' }
